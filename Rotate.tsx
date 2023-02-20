@@ -1,5 +1,5 @@
 import React, { forwardRef, PropsWithChildren, useImperativeHandle, useRef } from 'react';
-import { Animated, Easing, View, ViewStyle } from 'react-native';
+import { Animated, Easing, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Point, Size } from '@native-ts/common';
 
@@ -12,6 +12,7 @@ export interface RotateProps{
   size: Size;
   defaultAngle?: number;
   onAnimationEnd?: Animated.EndCallback;
+  style?: StyleProp<ViewStyle>;
 }
 
 const arr = new Array(72001).fill(null);
@@ -27,7 +28,7 @@ arr.forEach((_, index) => {
 const Rotate = forwardRef<RotateRef, PropsWithChildren<RotateProps>>(
   function Rotate(props, ref) {
 
-    const { anchor, defaultAngle = 0, children, size, onAnimationEnd } = props;
+    const { anchor, defaultAngle = 0, children, size, onAnimationEnd, style } = props;
 
     const animated = useRef(new Animated.Value(defaultAngle));
     const composite = useRef<Animated.CompositeAnimation>()
@@ -104,11 +105,9 @@ const Rotate = forwardRef<RotateRef, PropsWithChildren<RotateProps>>(
     const rotate = animated.current.interpolate({ inputRange, outputRange });
 
     return (
-      <View style={size}>
+      <View style={[ StyleSheet.flatten(style), size ]}>
         <Animated.View style={[ rotateStyle, { transform: [{ rotate }] } ]}>
-          <View
-            style={[size, innerStyle]}
-          >
+          <View style={[size, innerStyle]}>
             { children }
           </View>
         </Animated.View>
